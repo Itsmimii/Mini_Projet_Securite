@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Cryptanalysis Tool</title>
+    <link
+      rel="stylesheet"
+      href="{{ url_for('static', filename='style.css') }}"
+    />
+  </head>
+  <body>
+    <div class="container">
+      <h1>🔐 Cryptanalysis Tool</h1>
+      <textarea
+        id="ciphertext"
+        placeholder="Enter ciphertext here..."
+      ></textarea>
+      <button onclick="decrypt()">Decrypt</button>
+      <div id="results" class="hidden">
+        <h2>Results:</h2>
+        <p><strong>Cipher Detected:</strong> <span id="cipher"></span></p>
+        <p><strong>Key:</strong> <span id="key"></span></p>
+        <p><strong>Plaintext:</strong></p>
+        <p id="plaintext"></p>
+      </div>
+    </div>
+
+    <script>
+      async function decrypt() {
+        const ciphertext = document.getElementById("ciphertext").value;
+        if (!ciphertext) return;
+
+        const response = await fetch("/decrypt", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ ciphertext }),
+        });
+        const data = await response.json();
+
+        document.getElementById("cipher").innerText = data.cipher;
+        document.getElementById("key").innerText = data.key;
+        document.getElementById("plaintext").innerText = data.plaintext;
+
+        document.getElementById("results").classList.remove("hidden");
+
+        // Color coding
+        const color = data.cipher === "CAESAR" ? "#1E90FF" : "#28a745";
+        document.getElementById("results").style.borderColor = color;
+      }
+    </script>
+  </body>
+</html>
